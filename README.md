@@ -1,12 +1,9 @@
-References - 
+Aim: To automate the process of distributed tracing using the Jaeger distributed tracing framework and make it a Managed service.
 
-https://venilnoronha.io/hand-crafting-a-sidecar-proxy-and-demystifying-istio
+Distributed tracing can be defined as different methods used to profile, monitor, and observe requests as they propagate through different services in microservice-based applications. It is useful for pinpointing failure and finding the causes of poor performance in applications. As it transmits from service to service, each service adds some information to the trace such as request arrival time for a service, time to execute a request in service, etc. Using this information it is possible to create a picture of the entire request execution path (trace) for an end-to-end request.
 
-https://kind.sigs.k8s.io/docs/user/quick-start/
+The Jaeger distributed tracing framework keeps traces of all the services executed in an application that follow a request path through various microservices. Since we have a trace of all services we get a full picture to identify the root cause of a failure in the application. It is also used distributed context propagation which lets us connect data from different components together to create a complete end to end trace.
 
-https://gobyexample.com/http-servers
+In order to implement distributed tracing, it requires the developer to inject the tracer through each service when different requests are executed. Therefore, the project aims to separate the tracing logic and the application logic in order to make it run as a service. The concepts of Sidecar and Pods in Kubernetes are used.
 
-kubectl port-forward pods/jaeger-all-in-one 16686:16686
-
-kubectl port-forward pods/jaeger-all-in-one 6831:6831
-
+Detached the client-library implementation of Jaeger into a sidecar proxy separate from the application container inside a Pod. The proxy determines if the packet is originating from the service or is received from other services. Accordingly, Jaeger tracing spans are started and ended by the proxy. Thus, all the Jaeger logic lives in the sidecar, oblivious to the application container. This also fits well into the current cloud-native service mesh pattern. It is also easy to maintain and roll out updates to tracing logic or even swap out tracing libraries within proxies.
